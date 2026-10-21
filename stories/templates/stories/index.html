@@ -1,0 +1,40 @@
+{% extends "stories/base.html" %}
+{% block title %}StoryTell · Stories for kids and grown-ups{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>A story for every reader</h1>
+  <p>Cosy tales for children, and richer reads for adults. Pick a side and start reading.</p>
+</section>
+
+<div class="doors">
+  <a class="door door--kids" href="{% url 'stories:kids' %}">
+    <span class="door__emoji" aria-hidden="true">🧸</span>
+    <h2>Kids' Corner</h2>
+    <p>Bedtime tales, animal friends and little adventures, sorted by age.</p>
+    <span class="door__cta">{{ kids_total }} stor{{ kids_total|pluralize:"y,ies" }} →</span>
+  </a>
+  <a class="door door--adults" href="{% url 'stories:adults' %}">
+    <span class="door__emoji" aria-hidden="true">📚</span>
+    <h2>Grown-ups</h2>
+    <p>Drama, mystery, romance and horror. Mature themes, clearly labelled.</p>
+    <span class="door__cta">{% if adult_confirmed %}{{ adults_total }} stor{{ adults_total|pluralize:"y,ies" }} →{% else %}18+ · confirm your age →{% endif %}</span>
+  </a>
+</div>
+
+{% if featured %}
+<div class="section-head"><h2>Featured</h2></div>
+<div class="grid">{% for s in featured %}{% include "stories/_card.html" %}{% endfor %}</div>
+{% endif %}
+
+<div class="section-head"><h2>New for kids</h2><a href="{% url 'stories:kids' %}">See all</a></div>
+<div class="grid">
+  {% for s in kids_latest %}{% include "stories/_card.html" %}{% empty %}<p class="empty">No kids stories yet.</p>{% endfor %}
+</div>
+
+{% if adult_confirmed %}
+<div class="section-head"><h2>New for grown-ups</h2><a href="{% url 'stories:adults' %}">See all</a></div>
+<div class="grid">
+  {% for s in adults_latest %}{% include "stories/_card.html" %}{% empty %}<p class="empty">No adult stories yet.</p>{% endfor %}
+</div>
+{% endif %}
+{% endblock %}

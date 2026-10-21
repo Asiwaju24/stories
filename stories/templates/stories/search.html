@@ -1,0 +1,12 @@
+{% extends "stories/base.html" %}
+{% block title %}Search{% if q %}: {{ q }}{% endif %} · StoryTell{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>{% if q %}Results for “{{ q }}”{% else %}Search stories{% endif %}</h1>
+  {% if q %}<p>{{ page_obj.paginator.count }} stor{{ page_obj.paginator.count|pluralize:"y,ies" }} found.</p>{% endif %}
+</header>
+<div class="grid">{% for s in page_obj %}{% include "stories/_card.html" %}{% endfor %}</div>
+{% if q and not page_obj %}<p class="empty">Nothing matched “{{ q }}”. Try a shorter or different word.</p>{% endif %}
+{% if not q %}<p class="empty">Type a title, a word from a story, or a genre in the search box above.</p>{% endif %}
+{% include "stories/_pager.html" %}
+{% endblock %}

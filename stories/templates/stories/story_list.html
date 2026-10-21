@@ -1,0 +1,34 @@
+{% extends "stories/base.html" %}
+{% block title %}{{ heading }} · StoryTell{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>{{ heading }}</h1>
+  {% if audience == 'kids' %}<p>Gentle, age-appropriate stories. Pick your age and a topic.</p>
+  {% elif audience == 'adults' %}<p>Stories with mature themes. Content warnings are shown on each story.</p>{% endif %}
+</header>
+
+{% if audience %}
+<div class="filters" aria-label="Filter by genre">
+  <span class="filters__label">Genre</span>
+  <a class="pill" href="?{% if active_age %}age={{ active_age }}{% endif %}" {% if not active_genre %}aria-current="true"{% endif %}>All</a>
+  {% for g in genres %}
+    <a class="pill" href="?genre={{ g.slug }}{% if active_age %}&amp;age={{ active_age }}{% endif %}" {% if active_genre.pk == g.pk %}aria-current="true"{% endif %}>{{ g.emoji }} {{ g.name }}</a>
+  {% endfor %}
+</div>
+{% if audience == 'kids' %}
+<div class="filters" aria-label="Filter by age">
+  <span class="filters__label">Age</span>
+  <a class="pill" href="?{% if active_genre %}genre={{ active_genre.slug }}{% endif %}" {% if not active_age %}aria-current="true"{% endif %}>Any</a>
+  {% for value, label in age_choices %}
+    <a class="pill" href="?age={{ value }}{% if active_genre %}&amp;genre={{ active_genre.slug }}{% endif %}" {% if active_age == value %}aria-current="true"{% endif %}>{{ label }}</a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endif %}
+
+<div class="grid">
+  {% for s in page_obj %}{% include "stories/_card.html" %}{% empty %}{% endfor %}
+</div>
+{% if not page_obj %}<p class="empty">{{ empty_text|default:"No stories here yet. Try another filter." }}</p>{% endif %}
+{% include "stories/_pager.html" %}
+{% endblock %}

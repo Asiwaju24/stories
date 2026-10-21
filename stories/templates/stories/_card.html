@@ -1,0 +1,15 @@
+<article class="card card--{{ s.audience }}">
+  <a class="card__cover" href="{{ s.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+    {% if s.cover %}<img src="{{ s.cover.url }}" alt="" loading="lazy">{% else %}<div class="cover-ph"><span>{{ s.genre.emoji|default:"📖" }}</span></div>{% endif %}
+  </a>
+  <div class="card__body">
+    <div class="badges">
+      {% if s.audience == 'kids' %}<span class="badge badge--kids">{{ s.get_age_group_display }}</span>{% else %}<span class="badge badge--adults">18+</span>{% endif %}
+      {% if s.genre %}<span class="badge">{{ s.genre.name }}</span>{% endif %}
+      {% if s.featured %}<span class="badge badge--star">★ Featured</span>{% endif %}
+    </div>
+    <h3><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></h3>
+    <p class="card__excerpt">{{ s.excerpt|truncatewords:22 }}</p>
+    <p class="card__meta">{{ s.reading_time }} min read{% if s.content_warning %} · CW: {{ s.content_warning }}{% endif %}</p>
+  </div>
+</article>

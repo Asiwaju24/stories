@@ -1,0 +1,67 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}StoryTell{% endblock %}</title>
+  {% if theme == 'adults' %}<meta name="robots" content="noindex">{% endif %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="theme-{{ theme|default:'neutral' }}">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="{% url 'stories:index' %}">Story<span>Tell</span></a>
+      <button class="btn btn--ghost btn--small menu-toggle" type="button" data-menu-toggle aria-controls="site-nav" aria-expanded="false">Menu</button>
+      <nav class="site-nav" id="site-nav" aria-label="Main">
+        <div class="mode-switch">
+          <a href="{% url 'stories:kids' %}" {% if theme == 'kids' %}aria-current="page"{% endif %}>🧸 Kids</a>
+          <a href="{% url 'stories:adults' %}" {% if theme == 'adults' %}aria-current="page"{% endif %}>📚 Grown-ups</a>
+        </div>
+        <form class="search" action="{% url 'stories:search' %}" method="get" role="search">
+          <label class="visually-hidden" for="q">Search stories</label>
+          <input id="q" name="q" type="search" placeholder="Search stories" value="{{ q|default:'' }}">
+          <button class="btn btn--small" type="submit">Search</button>
+        </form>
+        <div class="nav-links">
+          {% if adult_confirmed %}
+          <form method="post" action="{% url 'stories:kids_mode' %}">{% csrf_token %}
+            <button class="link-button" type="submit">Switch to kids mode</button>
+          </form>
+          {% endif %}
+          {% if user.is_authenticated %}
+            <a href="{% url 'stories:bookmarks' %}">Saved</a>
+            {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+            <form method="post" action="{% url 'stories:logout' %}">{% csrf_token %}
+              <button class="link-button" type="submit">Log out ({{ user.get_username }})</button>
+            </form>
+          {% else %}
+            <a href="{% url 'stories:login' %}">Log in</a>
+            <a href="{% url 'stories:register' %}">Sign up</a>
+          {% endif %}
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container">
+    {% if messages %}
+    <ul class="messages" role="status">
+      {% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      StoryTell · Stories for every age ·
+      <a href="{% url 'stories:kids' %}">Kids' Corner</a> ·
+      <a href="{% url 'stories:adults' %}">Grown-ups</a>
+    </div>
+  </footer>
+  <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

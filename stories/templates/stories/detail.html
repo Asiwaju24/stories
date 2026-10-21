@@ -1,0 +1,43 @@
+{% extends "stories/base.html" %}
+{% block title %}{{ story.title }} · StoryTell{% endblock %}
+{% block content %}
+<article class="reader">
+  <p class="crumbs">
+    <a href="{% if story.is_kids %}{% url 'stories:kids' %}{% else %}{% url 'stories:adults' %}{% endif %}">{% if story.is_kids %}Kids' Corner{% else %}Grown-ups{% endif %}</a>
+    {% if story.genre %} / <a href="{{ story.genre.get_absolute_url }}">{{ story.genre.name }}</a>{% endif %}
+  </p>
+  <div class="badges">
+    {% if story.is_kids %}<span class="badge badge--kids">{{ story.get_age_group_display }}</span>{% else %}<span class="badge badge--adults">18+</span>{% endif %}
+  </div>
+  <h1>{{ story.title }}</h1>
+  <p class="story-meta">{% if story.author %}By {{ story.author.get_username }} · {% endif %}{{ story.created_at|date:"M j, Y" }} · {{ story.reading_time }} min read</p>
+
+  {% if story.content_warning %}
+  <p class="warning"><strong>Content warning:</strong> {{ story.content_warning }}</p>
+  {% endif %}
+  {% if story.cover %}<img class="story-cover" src="{{ story.cover.url }}" alt="">{% endif %}
+
+  <div class="story-tools">
+    <button class="btn btn--ghost btn--small" type="button" data-text-size="down" aria-label="Smaller text">A−</button>
+    <button class="btn btn--ghost btn--small" type="button" data-text-size="up" aria-label="Larger text">A+</button>
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'stories:bookmark' story.slug %}">{% csrf_token %}
+      <button class="btn btn--small" type="submit">{% if bookmarked %}★ Saved{% else %}☆ Save{% endif %}</button>
+    </form>
+    {% else %}
+    <a class="btn btn--ghost btn--small" href="{% url 'stories:login' %}?next={{ request.path|urlencode }}">Log in to save</a>
+    {% endif %}
+  </div>
+
+  <div class="story-text">{{ story.content|linebreaks }}</div>
+
+  {% if story.moral %}
+  <aside class="moral"><h2>What we learned</h2><p>{{ story.moral }}</p></aside>
+  {% endif %}
+</article>
+
+{% if related %}
+<div class="section-head"><h2>More {{ story.genre.name }} stories</h2></div>
+<div class="grid">{% for s in related %}{% include "stories/_card.html" %}{% endfor %}</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "stories/base.html" %}
+{% block title %}Adults only · StoryTell{% endblock %}
+{% block content %}
+<section class="panel">
+  <h1>This section is for readers 18 and over</h1>
+  <p>The Grown-ups section has stories with mature themes such as violence, grief and horror.</p>
+  <p class="help">You are confirming your own age. We do not check ID or store your date of birth. The confirmation lasts until you close your browser.</p>
+  <form method="post" class="actions">{% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn" type="submit" name="confirm" value="yes">I am 18 or older, continue</button>
+    <button class="btn btn--ghost" type="submit" name="confirm" value="no">Take me to the Kids' Corner</button>
+  </form>
+</section>
+{% endblock %}
